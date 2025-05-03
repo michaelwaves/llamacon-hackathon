@@ -1,3 +1,4 @@
+# Llama API
 curl "https://api.llama.com/v1/chat/completions" `
 -H "Content-Type: application/json" `
 -H "Authorization: Bearer LLM|1691583441494170|DaOBYWHB_cRw3gNWUyCXjwo7ZjY" `
@@ -7,3 +8,34 @@ curl "https://api.llama.com/v1/chat/completions" `
     { "role": "user", "content": "Hello Llama! Can you give me a quick intro?" }
   ]
 }'
+
+# GPU instances from Nebius:
+
+What you will be getting:
+
+### Hardware:
+* 16 vCPU
+* 200 GB of RAM
+* 1 Nvidia H100 GPU (80 GB of VRAM)
+* 1 TB SSD storage
+
+### Installed on the instance:
+Ubuntu 22.04
+Nvidia driver: v550.144.03 (CUDA v12.4)
+Python 3.10
+Docker Engine v28.0.1
+
+
+## How to get your GPU instance
+
+DM me (cyril.k), I will send you the credentials for connection via SSH.
+
+## When you got your credentials
+* Open your terminal
+* Run `ssh llamahack@<host>` (replace `<host>` with your instance IP)
+* You may be be prompted to add `<host>` to the list of known hosts, type `yes`
+* Enter your `password` from credentials you received
+* You are in, start hacking!
+
+## Important
+Do not attempt to update or re-install Nvidia driver on your instance (your VM already has it installed) 
