@@ -2,14 +2,14 @@
 .~lock.*
 
 # dependencies
-/node_modules
+node_modules
 
 # next.js
-/.next/
-/out/
+.next/
+out/
 
 # production
-/build
+build
 
 # debug
 npm-debug.log*
