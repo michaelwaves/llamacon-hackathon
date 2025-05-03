@@ -33,6 +33,7 @@ def generate_random_customer(customer_id=None):
         "account_creation_date": fake.date_time_between(start_date='-5y', end_date='now').isoformat(),
         "birthdate": fake.date_of_birth(minimum_age=18, maximum_age=80).isoformat(),
         "email": email,
+        "phone":"9038516387",
         "login_date_and_time": fake.date_time_between(start_date='-30d', end_date='now').isoformat(),
         "address_unit": fake.secondary_address(),
         "address_building_number": fake.building_number(),
