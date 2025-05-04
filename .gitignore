@@ -1,28 +1,67 @@
-.env
-.~lock.*
+# Environment variables
+.env*
+!.env.example
+!.env.template
 
-# dependencies
-node_modules
+# Python cache and compiled files
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*build*/
+*dist*/
+*.egg-info/
+*.egg
 
-# next.js
+# Python Virtual Environments
+venv/
+env/
+.venv/
+*/venv/
+*/env/
+*/.venv/
+
+# Python Notebooks Checkpoints
+.ipynb_checkpoints
+
+# IDE / Editor specific files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS generated files
+.DS_Store
+Thumbs.db
+
+# Node.js / Next.js
+node_modules/
 .next/
 out/
-
-# production
-build
-
-# debug
-# npm-debug.log*
-# yarn-debug.log*
-# yarn-error.log*
+# build/ # Keep this if you have a frontend build step
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
 .pnpm-debug.log*
 
-# env files
-.env*
-
-# vercel
-.vercel
-
-# typescript
+# TypeScript
 *.tsbuildinfo
 next-env.d.ts
+
+# Vercel
+.vercel
+
+# Data files (Optional - uncomment if you don't want to commit data)
+# backend/data/input_data.csv
+# backend/data/output_data_with_scores.csv
+
+# Lock files (Optional - depends on team policy, often committed)
+# package-lock.json
+# yarn.lock
+# poetry.lock
+# Pipfile.lock
+# pdm.lock
+
+# Temporary files
+.~lock.*
+
