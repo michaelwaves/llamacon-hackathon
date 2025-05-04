@@ -1,26 +1,54 @@
-.env
-.~lock.*
+# Environment variables
+.env*
+!.env.example
+!.env.template
 
-# dependencies
-node_modules
+# Python cache and compiled files
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*build*/
+*dist*/
+*.egg-info/
+*.egg
 
-# next.js
+# Python Virtual Environments
+venv/
+env/
+.venv/
+*/venv/
+*/env/
+*/.venv/
+
+# Python Notebooks Checkpoints
+.ipynb_checkpoints
+
+# IDE / Editor specific files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS generated files
+.DS_Store
+Thumbs.db
+
+# Node.js / Next.js
+node_modules/
 .next/
 out/
-
-# production
-build
-
-# debug
-# npm-debug.log*
-# yarn-debug.log*
-# yarn-error.log*
+# build/ # Keep this if you have a frontend build step
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
 .pnpm-debug.log*
 
-# env files
-.env*
+# TypeScript
+*.tsbuildinfo
+next-env.d.ts
 
-# vercel
+# Vercel
 .vercel
 
 # typescript
@@ -32,3 +60,7 @@ venv/
 */venv/
 ../../venv/
 
+
+
+.DS_Store
+__pycache__/
