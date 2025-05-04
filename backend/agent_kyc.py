@@ -1,6 +1,7 @@
 import os
 from llama_api_client import LlamaAPIClient
 from agent_tools import screen_for_pep, screen_for_adverse_media, print_banner
+from courtlistener import search_courtlistener
 from dotenv import load_dotenv
 from openai import OpenAI
 from pydantic import BaseModel
@@ -67,6 +68,10 @@ def kyc_agent_multimodal(firstname, lastname, occupation, image_url):
     adverse_media_results = screen_for_adverse_media(firstname, lastname, occupation)
     print(f"✅ Found {len(adverse_media_results)} Adverse Media hits")
 
+    print_banner("Fetching Court Cases Results")
+    court_cases_results = search_courtlistener(f"{firstname} {lastname}")
+    print(f"✅ Found {len(court_cases_results)} Court Case hits")
+
     print_banner("Analyzing KYC case")
     response = client.beta.chat.completions.parse(
         messages=[
@@ -75,7 +80,7 @@ def kyc_agent_multimodal(firstname, lastname, occupation, image_url):
                 "content":[ 
                 {"type":"text",
                      "text":f"""Given the profile {firstname} {lastname} with occupation {occupation} and image below, and the search results for adverse_media {adverse_media_results} 
-                and pep {pep_results} return a kyc_risk_score from 0 to 100 and a kyc_rationale of a few sentences explaining why
+               court cases {court_cases_results} and pep {pep_results} return a kyc_risk_score from 0 to 100 and a kyc_rationale of a few sentences explaining why
                 
                 MUST RETURN JSON FORMAT WITH FIELDS
                 kyc_risk_score
@@ -107,7 +112,7 @@ def kyc_agent_multimodal(firstname, lastname, occupation, image_url):
     return ({
         "risk_score":kyc_risk_score,
         "rationale":kyc_rationale
-    }, pep_results, adverse_media_results)
+    }, pep_results, adverse_media_results, court_cases_results)
 
 
 if __name__ == "__main__":  

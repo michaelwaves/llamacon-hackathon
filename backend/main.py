@@ -41,7 +41,7 @@ async def analyze_kyc(
     data_url = f"data:{image.content_type};base64,{encoded_image}"
     print(data_url)
 
-    res,pep_results,adverse_media_results = kyc_agent_multimodal(first_name, last_name, occupation, data_url)
+    res,pep_results,adverse_media_results,court_cases_results = kyc_agent_multimodal(first_name, last_name, occupation, data_url)
     print(res)
     # Placeholder logic – replace with your actual KYC processing
     result = {
@@ -53,6 +53,7 @@ async def analyze_kyc(
         "image_size_bytes": len(image_bytes),
         "pep_results":pep_results,
         "adverse_media_results":adverse_media_results,
+        "court_cases_results":court_cases_results,
         "kyc_result":res
     }
 

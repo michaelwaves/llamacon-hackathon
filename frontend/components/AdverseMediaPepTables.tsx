@@ -13,9 +13,10 @@ type ResultItem = {
 type Props = {
     pep_results: ResultItem[]
     adverse_media_results: ResultItem[]
+    court_results: ResultItem[]
 }
 
-export function AdverseMediaPepTables({ pep_results, adverse_media_results }: Props) {
+export function AdverseMediaPepTables({ pep_results, adverse_media_results, court_results }: Props) {
     const renderTable = (items: ResultItem[]) => (
         <div className="overflow-auto">
             <table className="w-full table-auto border mt-2">
@@ -54,10 +55,14 @@ export function AdverseMediaPepTables({ pep_results, adverse_media_results }: Pr
                 <TabsList>
                     <TabsTrigger value="pep">PEP Results</TabsTrigger>
                     <TabsTrigger value="adverse">Adverse Media</TabsTrigger>
+                    <TabsTrigger value="court">Court Cases</TabsTrigger>
+
                 </TabsList>
 
                 <TabsContent value="pep">{renderTable(pep_results)}</TabsContent>
                 <TabsContent value="adverse">{renderTable(adverse_media_results)}</TabsContent>
+                <TabsContent value="court">{renderTable(court_results)}</TabsContent>
+
             </Tabs>
         </Card>
     )

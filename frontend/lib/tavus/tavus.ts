@@ -13,11 +13,13 @@ export async function createConversation() {
         callback_url: "https://kyc.info/webhook",
         conversation_name: "A Reference for a Founder",
         conversational_context: `
-        Keep response short and snappy. You are interviewing Michael. 
-        This is a reference check for Alex. Ask him: Did you work with Alex Chan at Shopify? 
-        What was your experience with him, specifically his strengths, growth areas, work style, 
-        and any challenges? Were there any key behaviors or decision-making traits that stood out? 
-        If you had to pick five team members, would Alex be one of them?`,
+        Keep response short and snappy. You are interviewing Salvador Madrigal. 
+        This is a reference check for Salvador Madrigal as part of an Enhanced Due Diligence AML check. 
+        He is definitely Salvador Madrigal.
+        Ask him: about the large transactions of $9900, $9000, $9999 ocurring on May 4th 2025 in quick sucession.
+         What is the source of the funds? What is the purpose of these transactions?
+         What is his occupation?
+         `,
         custom_greeting: "Hey there!",
         properties: {
             max_call_duration: 60,

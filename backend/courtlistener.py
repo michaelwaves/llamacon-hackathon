@@ -32,8 +32,13 @@ def search_courtlistener(name):
     if response.status_code == 200:
         print("success")
         data = response.json()
-    
-        return data
+        print(data)
+        filtered_data = [{
+            "href":d.get("absolute_url",""),
+            "title":d.get("caseName",""),
+            "text":d.get("opinions","")[0].get("snippet")
+        }for d in data["results"]]
+        return filtered_data
     else:
         print(f"Error querying CourtListener for {name}: {response.status_code}")
         return []

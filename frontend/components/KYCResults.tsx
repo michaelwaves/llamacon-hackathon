@@ -1,6 +1,8 @@
 'use client'
 
 import { Card, CardContent } from '@/components/ui/card'
+import { Button } from './ui/button'
+import InterviewForm from './InterviewForm'
 type KYCResult = {
     first_name: string
     last_name: string
@@ -35,6 +37,9 @@ function KYCResults({ data }: { data: KYCResult }) {
                 <div>
                     <strong>Rationale:</strong>
                     <p className="mt-1 text-sm text-gray-700">{data.kyc_result.rationale}</p>
+                </div>
+                <div>
+                    <InterviewForm />
                 </div>
             </CardContent>
         </Card>
