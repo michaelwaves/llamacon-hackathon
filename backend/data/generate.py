@@ -161,5 +161,5 @@ if __name__ == "__main__":
         n_transactions=10,
         sanctioned_entities=["Vladimir Putin", "Oleg Viktorovitj MOROZOV"],
         sanctioned_countries=["IR", "KP", "RU"],
-        output_file="full_data.csv"
+        output_file="input_data.csv"
     )
