@@ -1,6 +1,6 @@
 import os
 from llama_api_client import LlamaAPIClient
-from agent_tools import screen_for_pep, screen_for_adverse_media
+from agent_tools import screen_for_pep, screen_for_adverse_media, print_banner
 from dotenv import load_dotenv
 from openai import OpenAI
 from pydantic import BaseModel
@@ -27,7 +27,6 @@ def kyc_agent(df):
         firstname = row["first_name"]
         lastname = row["last_name"]
         occupation = row["occupation"]
-
         pep_results = screen_for_pep(firstname, lastname, occupation)
         adverse_media_results = screen_for_adverse_media(firstname, lastname, occupation)
 
@@ -58,6 +57,57 @@ def kyc_agent(df):
     df["kyc_rationale"] = rationales
 
     return df
+
+def kyc_agent_multimodal(firstname, lastname, occupation, image_url):
+    print_banner("Fetching Politically Exposed Person Results")
+    pep_results = screen_for_pep(firstname, lastname, occupation)
+    print(f"✅ Found {len(pep_results)} PEP hits")
+
+    print_banner("Fetching Adverse Media Results")
+    adverse_media_results = screen_for_adverse_media(firstname, lastname, occupation)
+    print(f"✅ Found {len(adverse_media_results)} Adverse Media hits")
+
+    print_banner("Analyzing KYC case")
+    response = client.beta.chat.completions.parse(
+        messages=[
+            {
+                "role": "user",
+                "content":[ 
+                {"type":"text",
+                     "text":f"""Given the profile {firstname} {lastname} with occupation {occupation} and image below, and the search results for adverse_media {adverse_media_results} 
+                and pep {pep_results} return a kyc_risk_score from 0 to 100 and a kyc_rationale of a few sentences explaining why
+                
+                MUST RETURN JSON FORMAT WITH FIELDS
+                kyc_risk_score
+                kyc_rationale
+                """,
+                },
+                {
+                    "type":"image_url",
+                    "image_url":{
+                        "url":image_url
+                    }
+                }],
+               
+            },
+            
+
+        ],
+        model="Llama-4-Scout-17B-16E-Instruct-FP8",
+        response_format=KYCScoring,
+    )
+
+    parsed = response.choices[0].message.parsed
+    kyc_risk_score = parsed.kyc_risk_score
+    kyc_rationale=parsed.kyc_rationale
+
+    print(f"✅ Risk score of  {kyc_risk_score}/100 due to the following rationale:")
+    print(kyc_rationale)
+
+    return {
+        "risk_score":kyc_risk_score,
+        "rationale":kyc_rationale
+    }
 
 
 if __name__ == "__main__":  

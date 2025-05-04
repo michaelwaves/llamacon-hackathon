@@ -1,4 +1,4 @@
-from fastapi import FastAPI, File, UploadFile, HTTPException
+from fastapi import FastAPI, File, UploadFile, HTTPException, Form
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 import pandas as pd
@@ -6,7 +6,9 @@ from io import BytesIO
 import uvicorn
 from rules import flag_transactions
 from agent_transactions import transactions_agent
-from agent_kyc import kyc_agent
+from agent_kyc import kyc_agent, kyc_agent_multimodal
+from agent_tools import print_banner
+import base64
 
 app = FastAPI()
 
@@ -19,14 +21,40 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-def print_banner(title: str):
-    print("\n" + "=" * 40)
-    print(f"{title.center(40)}")
-    print("=" * 40 + "\n")
 
 @app.get("/")
 async def welcome():
     return {"message": "Welcome to the Transaction Monitoring AI API"}
+
+@app.post("/kyc")
+async def parse_kyc(
+    first_name: str = Form(...),
+    last_name: str = Form(...),
+    occupation: str = Form(...),
+    image: UploadFile = File(...)
+):
+    if not image.content_type.startswith("image/"):
+        raise HTTPException(status_code=400, detail="Uploaded file must be an image.")
+
+    image_bytes = await image.read()
+    encoded_image = base64.b64encode(image_bytes).decode("utf-8")
+    data_url = f"data:{image.content_type};base64,{encoded_image}"
+    print(data_url)
+
+    res = kyc_agent_multimodal(first_name, last_name, occupation, data_url)
+    print(res)
+    # Placeholder logic – replace with your actual KYC processing
+    result = {
+        "first_name": first_name,
+        "last_name": last_name,
+        "occupation": occupation,
+        "image_filename": image.filename,
+        "image_content_type": image.content_type,
+        "image_size_bytes": len(image_bytes),
+        "kyc_result":res
+    }
+
+    return JSONResponse(content=result)
 
 @app.post("/upload")
 async def upload_transactions(file: UploadFile = File(...)):

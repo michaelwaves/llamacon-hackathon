@@ -2,6 +2,11 @@ import re
 from typing import List, Dict, Optional
 from duckduckgo_search import DDGS  # pip install duckduckgo-search
 
+def print_banner(title: str):
+    print("\n" + "=" * 40)
+    print(f"{title.center(40)}")
+    print("=" * 40 + "\n")
+
 # Keyword lists
 DOMESTIC_POSITIONS = [
     "Governor General", "Lieutenant Governor", "Head of Government",
