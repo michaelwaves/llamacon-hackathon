@@ -27,7 +27,7 @@ async def welcome():
     return {"message": "Welcome to the Transaction Monitoring AI API"}
 
 @app.post("/kyc")
-async def parse_kyc(
+async def analyze_kyc(
     first_name: str = Form(...),
     last_name: str = Form(...),
     occupation: str = Form(...),
@@ -56,8 +56,8 @@ async def parse_kyc(
 
     return JSONResponse(content=result)
 
-@app.post("/upload")
-async def upload_transactions(file: UploadFile = File(...)):
+@app.post("/transactions")
+async def analyze_transactions(file: UploadFile = File(...)):
     if not file.filename.endswith((".xlsx", ".xls", ".csv")):
         raise HTTPException(status_code=400, detail="Invalid file format. Please upload an Excel or csv file.")
     
