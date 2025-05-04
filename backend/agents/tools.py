@@ -1,7 +1,8 @@
 import re
 from typing import List, Dict, Optional
-from duckduckgo_search import ddg  # pip install duckduckgo-search
+from duckduckgo_search import DDGS  # pip install duckduckgo-search
 
+# Keyword lists
 DOMESTIC_POSITIONS = [
     "Governor General", "Lieutenant Governor", "Head of Government",
     "Member of the Senate", "Member of the House of Commons", "Member of a Legislature",
@@ -34,7 +35,11 @@ ADVERSE_MEDIA_KEYWORDS = [
     "pot-de-vin", "éthique", "ponzi", "terreur", "terroriste", "stupéfiants", "drogue"
 ]
 
-def filter_results_by_keywords(results: List[Dict], keywords: List[str]) -> List[Dict]:
+# Shared helper
+def _search_duckduckgo(query: str, max_results: int = 30) -> List[Dict]:
+    return DDGS().text(keywords=query, max_results=max_results) or []
+
+def _filter_results_by_keywords(results: List[Dict], keywords: List[str]) -> List[Dict]:
     filtered = []
     for result in results:
         text = f"{result.get('title', '')} {result.get('body', '')}"
@@ -42,33 +47,28 @@ def filter_results_by_keywords(results: List[Dict], keywords: List[str]) -> List
             filtered.append(result)
     return filtered
 
-def screen_person_for_pep_and_adverse_media(
-    given_name: Optional[str], 
-    surname: Optional[str], 
-    occupation: Optional[str], 
+# Main screening functions
+def screen_for_pep(
+    given_name: Optional[str],
+    surname: Optional[str],
+    occupation: Optional[str],
     max_results: int = 30
-) -> Dict[str, List[Dict]]:
-    """
-    Screen a person for PEP and adverse media based on their name and occupation.
-    Returns a dictionary with filtered results.
-    """
-    query_parts = [given_name, surname, occupation]
-    base_query = " ".join(filter(None, query_parts))
-    full_query = base_query + " " + " ".join(ADVERSE_MEDIA_KEYWORDS)
+) -> List[Dict]:
+    query = " ".join(filter(None, [given_name, surname, occupation]))
+    results = _search_duckduckgo(query, max_results=max_results)
+    return _filter_results_by_keywords(results, PEP_KEYWORDS)
 
-    try:
-        search_results = ddg(full_query, max_results=max_results)
+def screen_for_adverse_media(
+    given_name: Optional[str],
+    surname: Optional[str],
+    occupation: Optional[str],
+    max_results: int = 5
+) -> List[Dict]:
+    query = " ".join(filter(None, [given_name, surname, occupation])) + " " + " ".join(ADVERSE_MEDIA_KEYWORDS)
+    results = _search_duckduckgo(query, max_results=max_results)
+    return _filter_results_by_keywords(results, ADVERSE_MEDIA_KEYWORDS)
 
-        if not search_results:
-            return {"pep": [], "adverseMedia": []}
 
-        pep_results = filter_results_by_keywords(search_results, PEP_KEYWORDS)
-        adverse_results = filter_results_by_keywords(search_results, ADVERSE_MEDIA_KEYWORDS)
-
-        return {
-            "pep": pep_results,
-            "adverseMedia": adverse_results
-        }
-
-    except Exception as e:
-        raise RuntimeError(f"Error during screening: {e}")
+if __name__  == "__main__":
+    res = screen_for_adverse_media("michael",'yu','startup')
+    print(res)
