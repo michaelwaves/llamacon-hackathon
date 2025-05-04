@@ -31,3 +31,5 @@ next-env.d.ts
 venv/
 */venv/
 ../../venv/
+
+__pycache__/
