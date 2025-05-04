@@ -22,7 +22,9 @@ client = OpenAI(
 )
 
 def kyc_agent(df):
-    for index, row in df.iterrows():
+    scores = []
+    rationales = []
+    for _, row in df.iterrows():
         firstname = row["first_name"]
         lastname = row["last_name"]
         occupation = row["occupation"]
@@ -30,21 +32,34 @@ def kyc_agent(df):
         pep_results = screen_for_pep(firstname, lastname, occupation)
         adverse_media_results = screen_for_adverse_media(firstname, lastname, occupation)
 
-        pep_response = client.responses.parse(
-            input=[
+        response = client.beta.chat.completions.parse(
+            messages=[
                 {
                     "content": f"""Given the profile {row.to_dict()}, and the search results for adverse_media {adverse_media_results} 
-                    and pep {pep_results} return a kyc_risk_score from 0 to 100 and a kyc_rationale of a few sentences explaining why""",
+                    and pep {pep_results} return a kyc_risk_score from 0 to 100 and a kyc_rationale of a few sentences explaining why
+                    
+                    MUST RETURN JSON FORMAT WITH FIELDS
+                    kyc_risk_score
+                    kyc_rationale
+                    """,
                     "role": "system",
                 }
             ],
             model="Llama-4-Scout-17B-16E-Instruct-FP8",
-            text_format=KYCScoring,
-
+            response_format=KYCScoring,
         )
 
-        print(pep_response)
-        print(pep_response.parsed)
+        parsed = response.choices[0].message.parsed
+        scores.append(parsed.kyc_risk_score)
+        rationales.append(parsed.kyc_rationale)
+
+    # Add new columns to the original DataFrame
+    df = df.copy()
+    df["kyc_risk_score"] = scores
+    df["kyc_rationale"] = rationales
+
+    return df
+
 
 if __name__ == "__main__":  
     # Manually define Michael Yu's data
@@ -58,14 +73,7 @@ if __name__ == "__main__":
     df = pd.DataFrame([michael_data])
     print("Michael Yu DataFrame:")
     print(df)   
-
-    """ for index, row in df.iterrows():
-        firstname = row["first_name"]
-        lastname = row["last_name"]
-        occupation = row["occupation"]
-        pep_results = screen_for_adverse_media(firstname, lastname, occupation)
     
-        print(pep_results) """
-
-    kyc_agent(df)
+    df = kyc_agent(df)
+    print(df)
 
