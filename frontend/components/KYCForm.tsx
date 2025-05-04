@@ -121,7 +121,7 @@ export function KYCForm() {
                     <AdverseMediaPepTables
                         pep_results={response.pep_results ?? []}
                         adverse_media_results={response.adverse_media_results ?? []}
-                        court_results={response.court_results ?? []}
+                        court_results={response.court_cases_results ?? []}
                     />
                 </>}
         </div>

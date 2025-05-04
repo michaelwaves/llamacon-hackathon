@@ -5,6 +5,7 @@ import { createConversation, endConversation, getTranscript } from "@/lib/tavus/
 import { Check } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
+import TranscriptDisplay from "./TranscriptDisplay";
 
 function InterviewForm() {
 
@@ -55,9 +56,6 @@ function InterviewForm() {
         }
 
         toast("Reference successfully submitted");
-
-
-
     }
     return (
         <div className="p-6 space-y-6">
@@ -74,6 +72,7 @@ function InterviewForm() {
                 <div className="flex items-center gap-2">
                     <Check className="w-5 h-5 text-green-500" />
                     <span className="text-green-500 font-medium">Successfully submitted</span>
+                    <TranscriptDisplay transcript={transcript} />
                 </div>
             )}
         </div>

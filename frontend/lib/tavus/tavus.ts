@@ -9,7 +9,7 @@ export async function createConversation() {
     }
 
     const body = {
-        replica_id: "rb17cf590e15",
+        replica_id: "r198a3fa79e9",
         callback_url: "https://kyc.info/webhook",
         conversation_name: "A Reference for a Founder",
         conversational_context: `

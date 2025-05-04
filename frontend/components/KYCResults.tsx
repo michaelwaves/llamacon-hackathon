@@ -21,7 +21,7 @@ function KYCResults({ data }: { data: KYCResult }) {
     let scoreColor = 'text-green-600'
     if (riskScore > 75) scoreColor = 'text-red-600'
     else if (riskScore > 50) scoreColor = 'text-orange-500'
-
+    console.log(data)
     return (
         <Card className="mt-6 p-6 shadow-md rounded-2xl border border-gray-200 bg-white">
             <CardContent className="space-y-4">
