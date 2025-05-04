@@ -29,7 +29,7 @@ async def welcome():
     return {"message": "Welcome to the Transaction Monitoring AI API"}
 
 @app.post("/upload")
-async def upload_excel(file: UploadFile = File(...)):
+async def upload_transactions(file: UploadFile = File(...)):
     if not file.filename.endswith((".xlsx", ".xls", ".csv")):
         raise HTTPException(status_code=400, detail="Invalid file format. Please upload an Excel or csv file.")
     
@@ -46,7 +46,7 @@ async def upload_excel(file: UploadFile = File(...)):
         df = flag_transactions(df)
 
         print_banner("Running KYC Agent")
-        df = kyc_agent(df)
+        #df = kyc_agent(df)
 
         print_banner("Running Transactions Agent")
         df = transactions_agent(df)
