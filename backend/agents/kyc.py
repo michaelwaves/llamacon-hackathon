@@ -3,6 +3,11 @@ from llama_api_client import LlamaAPIClient
 from tools import screen_for_pep, screen_for_adverse_media
 from dotenv import load_dotenv
 from openai import OpenAI
+from pydantic import BaseModel
+
+class KYCScoring(BaseModel):
+    kyc_risk_score: list[str]
+    kyc_rationale: list[str]
 
 
 load_dotenv()
@@ -24,11 +29,11 @@ def kyc_agent(df):
         pep_results = screen_for_pep(firstname, lastname, occupation)
         adverse_media_results = screen_for_adverse_media(firstname, lastname, occupation)
 
-pep_response = client.chat.completions.create(
+pep_response = client.responses.parse(
     messages=[
         {
-            "content": "string",
-            "role": "user",
+            "content": f"Given the adverse media search results ",
+            "role": "system",
         }
     ],
     model="Llama-4-Scout-17B-16E-Instruct-FP8",
