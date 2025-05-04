@@ -51,17 +51,11 @@ next-env.d.ts
 # Vercel
 .vercel
 
-# Data files (Optional - uncomment if you don't want to commit data)
-# backend/data/input_data.csv
-# backend/data/output_data_with_scores.csv
+# typescript
+*.tsbuildinfo
+next-env.d.ts
 
-# Lock files (Optional - depends on team policy, often committed)
-# package-lock.json
-# yarn.lock
-# poetry.lock
-# Pipfile.lock
-# pdm.lock
-
-# Temporary files
-.~lock.*
-
+# virtual environments
+venv/
+*/venv/
+../../venv/

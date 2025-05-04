@@ -222,8 +222,18 @@ def flag_sanctioned_individuals(transactions_df):
         for idx, txn in transactions_df.iterrows():
             # Extract the name from the email address
             email = txn['Email Address']
-            name_parts = email.split('@')[0].split('_')
-            name = ' '.join([part.capitalize() for part in name_parts if not part.isdigit()])
+            # Handle different email formats (with or without underscores)
+            if '@' in email:
+                name_parts = email.split('@')[0].split('_')
+                if len(name_parts) == 1:  # No underscores, try splitting by dot
+                    name_parts = email.split('@')[0].split('.')
+                name = ' '.join([part.capitalize() for part in name_parts if not part.isdigit()])
+            else:
+                # If no email format is detected, try using first_name and last_name if available
+                if 'first_name' in txn and 'last_name' in txn:
+                    name = f"{txn['first_name']} {txn['last_name']}"
+                else:
+                    name = ""
 
             # Check if the name is in the sanctions list
             for _, sanction in sanctions_df.iterrows():
@@ -277,9 +287,22 @@ def flag_transactions():
     """
     # Load data
     current_dir = os.path.dirname(os.path.abspath(__file__))
-    transactions_csv = os.path.join(current_dir, 'data', 'transactions.csv')
+    transactions_csv = os.path.join(current_dir, 'data', 'input_data.csv')
     print(f"Loading transactions from: {transactions_csv}")
     transactions_df = pd.read_csv(transactions_csv)
+
+    # Map column names to match expected format
+    column_mapping = {
+        'tx_id': 'TX ID',
+        'customer_id': 'Player ID',
+        'email_address': 'Email Address',
+        'type': 'Type',
+        'amount_trx': 'Amount (TRX)',
+        'request_date_utc': 'Request Date (UTC)'
+    }
+
+    # Rename columns for compatibility with existing code
+    transactions_df = transactions_df.rename(columns=column_mapping)
 
     # Apply all flagging rules
     flagged_high_value_24h = flag_high_value_24h(transactions_df)
@@ -337,7 +360,7 @@ def flag_transactions():
 
     # Save to CSV in the data directory (same level as the source file)
     data_dir = os.path.join(current_dir, 'data')
-    output_csv = os.path.join(data_dir, 'flagger_transactions.csv')
+    output_csv = os.path.join(data_dir, 'input_data_flagged.csv')
     result_df.to_csv(output_csv, index=False)
     print(f"Saved flagged transactions to: {output_csv}")
 
@@ -348,14 +371,13 @@ def flag_transactions():
     # Print each flagged transaction with its reason
     if flagged_count > 0:
         print("-" * 100)
-        for idx, row in transactions_df.iterrows():
+        for idx, row in result_df.iterrows():
             tx_id = row['TX ID']
             if tx_id in flagged_tx_ids:
-                print(f"Transaction ID: {tx_id}")
-                print(f"Player ID: {row['Player ID']}")
-                print(f"Email: {row['Email Address']}")
-                print(f"Amount: {row['Amount (TRX)']}")
-                print(f"Date: {row['Request Date (UTC)']}")
+                # Display the full row of suspicious transactions
+                print(f"Flagged Transaction:")
+                for col, val in row.items():
+                    print(f"{col}: {val}")
                 print(f"Flag Reason: {flagged_reasons[tx_id]}")
                 print("-" * 100)
 
