@@ -134,3 +134,10 @@ def flag_transactions(df: pd.DataFrame) -> pd.DataFrame:
     df['reason'] = df['tx_id'].apply(lambda x: reasons.get(x, ''))
 
     return df
+
+if __name__== "__main__":
+    df = pd.read_csv("./data/input_data.csv")
+    print(df.columns)
+    df = flag_transactions(df)
+    print(df)
+
