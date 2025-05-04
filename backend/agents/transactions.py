@@ -20,10 +20,6 @@ client = OpenAI(
 )
 
 
-<<<<<<< HEAD
-def transactions_agent(df:pd.DataFrame )->pd.DataFrame:
-    
-=======
 def transactions_agent(df: pd.DataFrame) -> pd.DataFrame:
     """
     Analyzes transaction data using an LLM to generate risk scores and rationales.
@@ -151,4 +147,3 @@ if __name__ == '__main__':
 
     else:
         print(f"Error: Input CSV not found at {input_csv_path}")
->>>>>>> a89dce959524bb1da4dd86a8e42c943ceb55fd5e

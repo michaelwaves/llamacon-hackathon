@@ -36,6 +36,7 @@ async def upload_excel(file: UploadFile = File(...)):
         # For now, just return the column names
 
         df = flag_transactions(df)
+        df = 
         print(df)
         
         return JSONResponse(content={"columns": df.columns.tolist()})
