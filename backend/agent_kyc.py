@@ -104,10 +104,10 @@ def kyc_agent_multimodal(firstname, lastname, occupation, image_url):
     print(f"✅ Risk score of  {kyc_risk_score}/100 due to the following rationale:")
     print(kyc_rationale)
 
-    return {
+    return ({
         "risk_score":kyc_risk_score,
         "rationale":kyc_rationale
-    }
+    }, pep_results, adverse_media_results)
 
 
 if __name__ == "__main__":  
