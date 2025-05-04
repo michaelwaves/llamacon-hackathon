@@ -5,6 +5,8 @@ import pandas as pd
 from io import BytesIO
 import uvicorn
 from rules import flag_transactions
+from agent_transactions import transactions_agent
+from agent_kyc import kyc_agent
 
 app = FastAPI()
 
@@ -16,6 +18,11 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+def print_banner(title: str):
+    print("\n" + "=" * 40)
+    print(f"{title.center(40)}")
+    print("=" * 40 + "\n")
 
 @app.get("/")
 async def welcome():
@@ -35,8 +42,16 @@ async def upload_excel(file: UploadFile = File(...)):
             df = pd.read_excel(BytesIO(contents))  # Read file into pandas DataFrame
         # For now, just return the column names
 
+        print_banner("Flagging Transactions")
         df = flag_transactions(df)
-        df = 
+
+        print_banner("Running KYC Agent")
+        df = kyc_agent(df)
+
+        print_banner("Running Transactions Agent")
+        df = transactions_agent(df)
+
+        print_banner("Final DataFrame Output")
         print(df)
         
         return JSONResponse(content={"columns": df.columns.tolist()})
