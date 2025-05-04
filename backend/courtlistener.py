@@ -17,26 +17,26 @@ def search_courtlistener(name):
     Search CourtListener for cases involving the given name and keywords.
     Returns True if any relevant cases are found.
     """
-    for keyword in KEYWORDS:
-        query = f'"{name}" AND {keyword}'
-        params = {
-            'q': query,
-            'order_by': 'dateFiled desc',
-            'type': 'o',
-            'page_size': 1
-        }
-        headers = {
-            'Authorization': f'Token {API_KEY}'
-        }
-        response = requests.get(API_URL, headers=headers, params=params)
-        if response.status_code == 200:
-            data = response.json()
-            if data.get('count', 0) > 0:
-                return True
-        else:
-            print(f"Error querying CourtListener for {name}: {response.status_code}")
-        time.sleep(1)  # Respectful delay between requests
-    return False
+
+    query = name
+    params = {
+        'q': query,
+        'order_by': 'dateFiled desc',
+        'type': 'o',
+        'page_size': 1
+    }
+    headers = {
+        'Authorization': f'Token {API_KEY}'
+    }
+    response = requests.get(API_URL, headers=headers, params=params)
+    if response.status_code == 200:
+        print("success")
+        data = response.json()
+    
+        return data
+    else:
+        print(f"Error querying CourtListener for {name}: {response.status_code}")
+        return []
 
 def process_transactions(max_transactions=5):
     """
@@ -121,5 +121,8 @@ def process_transactions(max_transactions=5):
 
 if __name__ == "__main__":
     # Process only 5 transactions for testing
-    process_transactions(max_transactions=5)
+    #process_transactions(max_transactions=5)
+    res = search_courtlistener("salvador madrigal")
+    print(res)
     print("Processing complete.")
+
