@@ -117,7 +117,7 @@ def generate_customers(n_customers, sanctioned_entities):
         cust = generate_random_customer()
         
         # Inject sanctioned entity by replacing name, not ID
-        if random.random() < 0.05 and sanctioned_entities:
+        if random.random() < 0.5 and sanctioned_entities:
             full_name = random.choice(sanctioned_entities)
             parts = full_name.split()
             if len(parts) >= 2:
@@ -157,8 +157,8 @@ def generate_dataset_2step(
 
 if __name__ == "__main__":
     generate_dataset_2step(
-        n_customers=300,
-        n_transactions=1500,
+        n_customers=3,
+        n_transactions=10,
         sanctioned_entities=["Vladimir Putin", "Oleg Viktorovitj MOROZOV"],
         sanctioned_countries=["IR", "KP", "RU"],
         output_file="full_data.csv"
