@@ -2,12 +2,15 @@
 
 import type React from "react"
 
-import { useState, useRef } from "react"
-import { Upload, Phone, MessageSquare, Mail, User, AlertCircle, CheckCircle, XCircle, HelpCircle } from "lucide-react"
+import { useState, useRef, ChangeEvent, FormEvent } from "react"
+import { Upload, Phone, MessageSquare, Mail, User, AlertCircle, CheckCircle, XCircle, HelpCircle, Image as ImageIcon } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { motion, AnimatePresence } from "framer-motion"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import { Textarea } from "@/components/ui/textarea"
 
 // Types
 type TransactionStatus = "approved" | "flagged" | "review"
@@ -29,6 +32,19 @@ export default function Home() {
   const [transactions, setTransactions] = useState<Transaction[]>([])
   const [overallStatus, setOverallStatus] = useState<"idle" | "safe" | "review" | "fraud">("idle")
   const fileInputRef = useRef<HTMLInputElement>(null)
+
+  // State for the new profile analysis form
+  const [firstName, setFirstName] = useState("")
+  const [lastName, setLastName] = useState("")
+  const [occupation, setOccupation] = useState("")
+  const [textField1, setTextField1] = useState("")
+  const [textField2, setTextField2] = useState("")
+  const [textField3, setTextField3] = useState("")
+  const [imageFile, setImageFile] = useState<File | null>(null)
+  const [imagePreview, setImagePreview] = useState<string | null>(null)
+  const [profileAnalysisResult, setProfileAnalysisResult] = useState<{ description: string; riskScore: number } | null>(null)
+  const [isAnalyzingProfile, setIsAnalyzingProfile] = useState(false)
+  const profileImageInputRef = useRef<HTMLInputElement>(null)
 
   const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
@@ -145,8 +161,73 @@ export default function Home() {
     }
   }
 
+  const handleImageChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (file) {
+      setImageFile(file)
+      const reader = new FileReader()
+      reader.onloadend = () => {
+        setImagePreview(reader.result as string)
+      }
+      reader.readAsDataURL(file)
+    } else {
+      setImageFile(null)
+      setImagePreview(null)
+    }
+  }
+
   const triggerFileInput = () => {
     fileInputRef.current?.click()
+  }
+
+  const triggerProfileImageInput = () => {
+    profileImageInputRef.current?.click()
+  }
+
+  const handleProfileSubmit = async (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault()
+    if (!firstName || !lastName || !occupation || !imageFile) {
+      // Basic validation - add more as needed
+      alert("Please fill in First Name, Last Name, Occupation, and upload an image.")
+      return
+    }
+
+    setIsAnalyzingProfile(true)
+    setProfileAnalysisResult(null)
+
+    const formData = new FormData()
+    formData.append("firstName", firstName)
+    formData.append("lastName", lastName)
+    formData.append("occupation", occupation)
+    formData.append("textField1", textField1)
+    formData.append("textField2", textField2)
+    formData.append("textField3", textField3)
+    formData.append("image", imageFile)
+
+    try {
+      // TODO: Replace with the actual backend endpoint URL
+      const response = await fetch("/api/analyze_profile", { // ASSUMED ENDPOINT
+        method: "POST",
+        body: formData,
+        // Headers might not be needed if backend handles FormData correctly
+        // headers: { 'Content-Type': 'multipart/form-data' }, // Let browser set this with boundary
+      })
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`)
+      }
+
+      const result = await response.json()
+      setProfileAnalysisResult(result) // Assuming backend returns { description: string, riskScore: number }
+
+    } catch (error) {
+      console.error("Error submitting profile analysis:", error)
+      // TODO: Show user-friendly error message
+      alert("Failed to analyze profile. Please try again.")
+      setProfileAnalysisResult({ description: "Error during analysis.", riskScore: -1 }) // Example error state
+    } finally {
+      setIsAnalyzingProfile(false)
+    }
   }
 
   const needsAction = transactions.some((t) => t.status === "flagged" || t.status === "review")
@@ -227,7 +308,7 @@ export default function Home() {
   }
 
   return (
-    <main className="container mx-auto px-4 py-8 max-w-6xl">
+    <main className="container mx-auto px-4 py-8 max-w-6xl space-y-8">
       <Card className="mb-8 border-none shadow-lg">
         <CardHeader className="flex flex-row items-center justify-between">
           <CardTitle className="text-2xl font-bold">AI-Powered Transaction Analyzer</CardTitle>
@@ -248,6 +329,79 @@ export default function Home() {
               {isUploading ? "Uploading..." : "Select CSV File"}
             </Button>
           </div>
+        </CardContent>
+      </Card>
+
+      {/* New Profile Analysis Card */}
+      <Card className="border-none shadow-lg">
+        <CardHeader>
+          <CardTitle className="text-2xl font-bold">Profile Risk Analysis</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <form onSubmit={handleProfileSubmit} className="space-y-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <Label htmlFor="firstName">First Name</Label>
+                <Input id="firstName" value={firstName} onChange={(e) => setFirstName(e.target.value)} required />
+              </div>
+              <div>
+                <Label htmlFor="lastName">Last Name</Label>
+                <Input id="lastName" value={lastName} onChange={(e) => setLastName(e.target.value)} required />
+              </div>
+            </div>
+            <div>
+              <Label htmlFor="occupation">Occupation</Label>
+              <Input id="occupation" value={occupation} onChange={(e) => setOccupation(e.target.value)} required />
+            </div>
+            <div>
+              <Label htmlFor="textField1">Additional Info 1</Label>
+              <Textarea id="textField1" value={textField1} onChange={(e) => setTextField1(e.target.value)} />
+            </div>
+            <div>
+              <Label htmlFor="textField2">Additional Info 2</Label>
+              <Textarea id="textField2" value={textField2} onChange={(e) => setTextField2(e.target.value)} />
+            </div>
+            <div>
+              <Label htmlFor="textField3">Additional Info 3</Label>
+              <Textarea id="textField3" value={textField3} onChange={(e) => setTextField3(e.target.value)} />
+            </div>
+            <div>
+              <Label>Profile Image</Label>
+              <div className="flex items-center gap-4 mt-2">
+                <Button type="button" variant="outline" onClick={triggerProfileImageInput}>
+                  <ImageIcon className="mr-2 h-4 w-4" /> Choose Image
+                </Button>
+                <input
+                  type="file"
+                  ref={profileImageInputRef}
+                  onChange={handleImageChange}
+                  accept="image/*"
+                  className="hidden"
+                  required
+                />
+                {imagePreview && <img src={imagePreview} alt="Preview" className="h-16 w-16 rounded object-cover" />}
+                {imageFile && <span className="text-sm text-gray-500">{imageFile.name}</span>}
+              </div>
+            </div>
+            <Button type="submit" disabled={isAnalyzingProfile} className="w-full md:w-auto">
+              {isAnalyzingProfile ? "Analyzing Profile..." : "Analyze Profile Risk"}
+            </Button>
+          </form>
+
+          {/* Display Profile Analysis Results */}
+          {isAnalyzingProfile && <p className="mt-4 text-center text-blue-600">Analyzing...</p>}
+          {profileAnalysisResult && (
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5 }}
+              className="mt-6 p-4 border rounded-lg bg-gray-50 dark:bg-gray-800"
+            >
+              <h4 className="font-semibold mb-2">Analysis Result:</h4>
+              <p className="mb-2"><span className="font-medium">Description:</span> {profileAnalysisResult.description}</p>
+              <p><span className="font-medium">Risk Score:</span> {getRiskScoreBadge(profileAnalysisResult.riskScore)}</p>
+            </motion.div>
+          )}
         </CardContent>
       </Card>
 
