@@ -1,6 +1,6 @@
 import os
 from llama_api_client import LlamaAPIClient
-from tools import screen_for_pep, screen_for_adverse_media
+from agent_tools import screen_for_pep, screen_for_adverse_media
 from dotenv import load_dotenv
 from openai import OpenAI
 from pydantic import BaseModel
@@ -9,7 +9,6 @@ import pandas as pd
 class KYCScoring(BaseModel):
     kyc_risk_score: str
     kyc_rationale: str
-
 
 load_dotenv()
 """ client = LlamaAPIClient(
@@ -73,7 +72,7 @@ if __name__ == "__main__":
     df = pd.DataFrame([michael_data])
     print("Michael Yu DataFrame:")
     print(df)   
-    
+
     df = kyc_agent(df)
     print(df)
 

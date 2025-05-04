@@ -4,6 +4,7 @@ from fastapi.responses import JSONResponse
 import pandas as pd
 from io import BytesIO
 import uvicorn
+from rules import flag_transactions
 
 app = FastAPI()
 
@@ -33,6 +34,10 @@ async def upload_excel(file: UploadFile = File(...)):
         else:
             df = pd.read_excel(BytesIO(contents))  # Read file into pandas DataFrame
         # For now, just return the column names
+
+        df = flag_transactions(df)
+        print(df)
+        
         return JSONResponse(content={"columns": df.columns.tolist()})
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error processing file: {str(e)}")
