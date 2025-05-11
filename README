@@ -1,7 +1,7 @@
 # Llama API
 curl "https://api.llama.com/v1/chat/completions" `
 -H "Content-Type: application/json" `
--H "Authorization: Bearer LLM|1691583441494170|DaOBYWHB_cRw3gNWUyCXjwo7ZjY" `
+-H "Authorization: Bearer <your llama api key>" `
 -d '{
   "model": "Llama-4-Maverick-17B-128E-Instruct-FP8",
   "messages": [
